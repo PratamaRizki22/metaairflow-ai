@@ -24,7 +24,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             # Navigate to project directory
-            cd ${{ secrets.DEPLOY_PATH || '/opt/rentverse-ai-service' }}
+            cd ${{ secrets.DEPLOY_PATH || '/home/Rizpek/rentverse-ai-service' }}
             
             # Pull latest changes
             git pull origin master
