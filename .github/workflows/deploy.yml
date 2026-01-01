@@ -32,9 +32,14 @@ jobs:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
 
-      - name: Deploy to Server via rsync
+      - name: Deploy to Server via SCP
         run: |
-          rsync -avz --exclude '.git' --exclude 'rentverse/models' ./ target:${{ secrets.DEPLOY_PATH || '/home/Rizpek/rentverse-ai-service' }}
+          # Create remote directory first
+          ssh target "mkdir -p ${{ secrets.DEPLOY_PATH || '/home/Rizpek/rentverse-ai-service' }}"
+          
+          # Copy files using scp (exclude .git and heavy models)
+          # Note: scp doesn't support --exclude nicely, so we use tar over ssh which is robust
+          tar -czf - --exclude='.git' --exclude='rentverse/models' . | ssh target "tar -xzf - -C ${{ secrets.DEPLOY_PATH || '/home/Rizpek/rentverse-ai-service' }}"
 
       - name: Restart Docker Services
         uses: appleboy/ssh-action@v1.0.3
